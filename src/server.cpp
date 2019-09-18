@@ -5,6 +5,24 @@
 #include <QWidget>
 
 #include <iostream>
+#include <thread>
+
+#include <socket_io/protocols.hpp>
+#include <socket_io/server.hpp>
+
+/*
+ * Being run in a separate thread, this function waits for any messages from
+ * the clients and displays them using the QTextEdit object.
+ */
+static void collect_messages_from_clients(socket_io::server server_handle,
+                                          QTextEdit messages_from_clients)
+{
+    for (;;)
+    {
+        std::string const message = server_handle.receive();
+        messages_from_clients.append(message.c_str());
+    }
+}
 
 int main(int argc, char *argv[])
 {
@@ -35,7 +53,12 @@ int main(int argc, char *argv[])
 
     main_window.show();
 
+    socket_io::server server_handle{argv[1], socket_io::ip_protocol::IPv4};
+    std::thread collector_tid = std::thread{collect_messages_from_clients,
+                                            std::move(server_handle),
+                                            std::move(messages_from_clients)};
+    collector_tid.detach();
 
-
+    pthread_cancel(collector_tid.native_handle());
     return a.exec();
 }
