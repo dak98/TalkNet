@@ -4,8 +4,17 @@
 #include <QTextEdit>
 #include <QWidget>
 
+#include <iostream>
+
 int main(int argc, char *argv[])
 {
+    if (argc != 2)
+    {
+        std::cout << "Expected 1 argument but got " + std::to_string(argc)
+                  << ". Should be [Server's port]" << std::endl;
+        return -1;
+    }
+
     QApplication a(argc, argv);
 
     QWidget main_window;
