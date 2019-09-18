@@ -8,6 +8,8 @@ int main(int argc, char *argv[])
     QWidget main_window;
     main_window.setWindowTitle("Server");
 
+    QTextEdit
+
     main_window.show();
     return a.exec();
 }
