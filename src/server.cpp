@@ -14,8 +14,8 @@
  * Being run in a separate thread, this function waits for any messages from
  * the clients and displays them using the QTextEdit object.
  */
-static void collect_messages_from_clients(socket_io::server server_handle,
-                                          QTextEdit messages_from_clients)
+static void collect_messages_from_clients(socket_io::server& server_handle,
+                                          QTextEdit& messages_from_clients)
 {
     for (;;)
     {
@@ -55,9 +55,11 @@ int main(int argc, char *argv[])
 
     socket_io::server server_handle{argv[1], socket_io::ip_protocol::IPv4};
     std::thread collector_tid = std::thread{collect_messages_from_clients,
-                                            std::move(server_handle),
-                                            std::move(messages_from_clients)};
+                                            std::ref(server_handle),
+                                            std::ref(messages_from_clients)};
     collector_tid.detach();
+
+
 
     pthread_cancel(collector_tid.native_handle());
     return a.exec();
