@@ -28,6 +28,10 @@ SOURCES += src/server.cpp
 
 HEADERS +=
 
+INCLUDEPATH += /usr/include/socket_io
+
+LIBS += -L/usr/lib -lsockio
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
