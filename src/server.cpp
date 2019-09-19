@@ -14,6 +14,7 @@
  * Being run in a separate thread, this function waits for any messages from
  * the clients and displays them using the QTextEdit object.
  */
+[[noreturn]]
 static void collect_messages_from_clients(socket_io::server& server_handle,
                                           QTextEdit& messages_from_clients)
 {
@@ -33,7 +34,7 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    QApplication a(argc, argv);
+    QApplication app(argc, argv);
 
     QWidget main_window;
     main_window.setWindowTitle("Server");
@@ -58,9 +59,15 @@ int main(int argc, char *argv[])
                                             std::ref(server_handle),
                                             std::ref(messages_from_clients)};
     collector_tid.detach();
+    /*
+     * The closing of the server's collector thread should happen just before
+     * the destruction of the server and QTextEdit objects.
+     */
+    QObject::connect(&app, &QApplication::aboutToQuit,
+                     [&collector_tid]()
+                     { pthread_cancel(collector_tid.native_handle()); });
 
 
 
-    pthread_cancel(collector_tid.native_handle());
-    return a.exec();
+    return app.exec();
 }
