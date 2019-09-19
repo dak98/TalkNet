@@ -10,6 +10,8 @@
 #include <socket_io/protocols.hpp>
 #include <socket_io/server.hpp>
 
+#include "common/QConsole.hpp"
+
 /*
  * Being run in a separate thread, this function waits for any messages from
  * the clients and displays them using the QTextEdit object.
@@ -38,23 +40,23 @@ int main(int argc, char *argv[])
 
     QWidget main_window;
     main_window.setWindowTitle("Server");
-
     QHBoxLayout main_layout;
 
-    QTextEdit messages_from_clients, user_console;
+    QTextEdit messages_from_clients;
     messages_from_clients.setReadOnly(true);
+    QConsole user_console;
 
     /*
      * QWidget object takes ownership of the QHBoxLayout object which takes
-     * ownership of the QTextEdit objects.
+     * ownership of the QTextEdit and QLineEdit objects.
      */
     main_layout.addWidget(&messages_from_clients);
     main_layout.addWidget(&user_console);
-    main_window.setLayout(&main_layout);
-
-    main_window.show();
+    main_window.setLayout(&main_layout);    
 
     socket_io::server server_handle{argv[1], socket_io::ip_protocol::IPv4};
+    main_window.show();
+
     std::thread collector_tid = std::thread{collect_messages_from_clients,
                                             std::ref(server_handle),
                                             std::ref(messages_from_clients)};
@@ -66,8 +68,6 @@ int main(int argc, char *argv[])
     QObject::connect(&app, &QApplication::aboutToQuit,
                      [&collector_tid]()
                      { pthread_cancel(collector_tid.native_handle()); });
-
-
 
     return app.exec();
 }
