@@ -12,7 +12,7 @@
 #include <socket_io/server.hpp>
 
 #include "cli_handlers.hpp"
-#include "common/QConsole.hpp"
+#include "QConsole.hpp"
 
 /*
  * Being run in a separate thread, this function waits for any messages from
