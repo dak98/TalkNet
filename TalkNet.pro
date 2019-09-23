@@ -22,13 +22,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-CONFIG += c++11
+QMAKE_CXXFLAGS += -std=c++17
 
-SOURCES += src/server.cpp
+SOURCES += src/server.cpp \
+           common/QConsole.cpp \
+           src/cli_handlers.cpp
 
-HEADERS +=
+HEADERS += common/QConsole.hpp \
+           include/cli_handlers.hpp
 
-INCLUDEPATH += /usr/include/socket_io
+INCLUDEPATH += /usr/include/socket_io \
+               include
 
 LIBS += -L/usr/lib -lsockio
 
