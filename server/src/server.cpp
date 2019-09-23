@@ -51,7 +51,7 @@ static QString dispatch_cli_command(QString command,
     return result;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     if (argc != 2)
     {
