@@ -11,6 +11,7 @@
 #include <socket_io/protocols.hpp>
 #include <socket_io/server.hpp>
 
+#include "cli_handlers.hpp"
 #include "common/QConsole.hpp"
 
 /*
@@ -35,6 +36,7 @@ static void collect_messages_from_clients(socket_io::server& server_handle,
 using cli_handler = std::function<QString(QString, socket_io::server&)>;
 inline QHash<QString, cli_handler> cli_handlers
 {
+    {"LIST", talk_net::cli_LIST}
 };
 
 static QString dispatch_cli_command(QString command,
@@ -67,6 +69,9 @@ int main(int argc, char *argv[])
     QTextEdit messages_from_clients;
     messages_from_clients.setReadOnly(true);
     QConsole user_console;
+
+    for (auto it = cli_handlers.begin(); it != cli_handlers.end(); ++it)
+        user_console.registerCommand(it.key());
 
     /*
      * QWidget object takes ownership of the QHBoxLayout object which takes
