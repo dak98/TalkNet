@@ -1,9 +1,10 @@
 #include <QApplication>
+#include <QHash>
 #include <QHBoxLayout>
-#include <QScopedPointer>
 #include <QTextEdit>
 #include <QWidget>
 
+#include <functional>
 #include <iostream>
 #include <thread>
 
@@ -25,6 +26,27 @@ static void collect_messages_from_clients(socket_io::server& server_handle,
         std::string const message = server_handle.receive();
         messages_from_clients.append(message.c_str());
     }
+}
+
+/*
+ * The first argument of a cli_handler are the arguments given to the command
+ * or QString() (empty) if there aren't any.
+ */
+using cli_handler = std::function<QString(QString, socket_io::server&)>;
+inline QHash<QString, cli_handler> cli_handlers
+{
+};
+
+static QString dispatch_cli_command(QString command,
+                                    QString arguments,
+                                    socket_io::server& server_handle)
+{
+    QString result;
+    if (cli_handlers.contains(command))
+        result = cli_handlers[command](arguments, server_handle);
+    else
+        result = command + ": Unknown command";
+    return result;
 }
 
 int main(int argc, char *argv[])
@@ -67,7 +89,19 @@ int main(int argc, char *argv[])
      */
     QObject::connect(&app, &QApplication::aboutToQuit,
                      [&collector_tid]()
-                     { pthread_cancel(collector_tid.native_handle()); });
+                     {
+                         pthread_cancel(collector_tid.native_handle());
+                     });
+
+    QObject::connect(&user_console, &QConsole::commandReceived,
+                     [&server_handle, &user_console]
+                     (QString command, QString arguments)
+                     {
+                         QString output = dispatch_cli_command(command,
+                                                               arguments,
+                                                               server_handle);
+                         user_console.setCommandOutput(command, output);
+                     });
 
     return app.exec();
 }
