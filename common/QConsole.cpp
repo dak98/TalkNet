@@ -38,9 +38,13 @@ void QConsole::inputReceived()
     const QString input = user_input.text();
     user_input.clear();
 
-    const QString command = input.mid(0, input.indexOf(' '));
+    const int pos_of_arguments = input.indexOf(' ');
+    const QString command = input.mid(0, pos_of_arguments);
+    const QString arguments = pos_of_arguments == -1
+                              ? QString()
+                              : command.mid(pos_of_arguments + 1, -1);
     if (registered_commands.contains(command))
-        emit commandReceived(input);
+        emit commandReceived(command, arguments);
     else
         setCommandOutput(command, "Unknown command");
 }

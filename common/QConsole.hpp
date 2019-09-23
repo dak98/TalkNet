@@ -33,7 +33,8 @@ public:
     { registered_commands.insert(command); }
 
 signals:
-    void commandReceived(QString);
+    // If no arguments were provided, arguments is set to QString() (empty).
+    void commandReceived(QString command, QString arguments);
 
 public slots:
     void setCommandOutput(const QString &command, const QString &output);
