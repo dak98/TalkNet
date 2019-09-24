@@ -4,8 +4,12 @@
 #include <QWidget>
 
 #include <iostream>
+#include <thread>
+
+#include <socket_io/client.hpp>
 
 #include "QConsole.hpp"
+#include "utility.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -35,7 +39,23 @@ int main(int argc, char* argv[])
     main_layout.addWidget(&user_console);
     main_window.setLayout(&main_layout);
 
+    socket_io::ipv4_socket_address address_of_client{argv[1], argv[2]};
+    socket_io::client client_handle{address_of_client};
     main_window.show();
+
+    std::thread collector_tid{talk_net::collect_messages<socket_io::client>,
+                              std::ref(client_handle),
+                              std::ref(received_messages)};
+    collector_tid.detach();
+    /*
+     * The closing of the client's collector thread should happen just before
+     * the destruction of the server and QTextEdit objects.
+     */
+    QObject::connect(&app, &QApplication::aboutToQuit,
+                     [&collector_tid]()
+                     {
+                         pthread_cancel(collector_tid.native_handle());
+                     });
 
     return app.exec();
 }
