@@ -24,7 +24,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 QMAKE_CXXFLAGS += -std=c++17
 
-SOURCES += client.cpp \
+SOURCES += src/client.cpp \
            ../common/QConsole.cpp
 
 HEADERS += ../common/QConsole.hpp \
