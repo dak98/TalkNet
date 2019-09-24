@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QHash>
 #include <QHBoxLayout>
 #include <QTextEdit>
 #include <QWidget>
@@ -10,6 +11,15 @@
 
 #include "QConsole.hpp"
 #include "utility.hpp"
+
+/*
+ * The first argument of a cli_handler are the arguments given to the command
+ * or QString() (empty) if there aren't any.
+ */
+using cli_handler = std::function<QString(QString, socket_io::client&)>;
+inline QHash<QString, cli_handler> cli_handlers
+{
+};
 
 int main(int argc, char* argv[])
 {
@@ -55,6 +65,18 @@ int main(int argc, char* argv[])
                      [&collector_tid]()
                      {
                          pthread_cancel(collector_tid.native_handle());
+                     });
+
+    QObject::connect(&user_console, &QConsole::commandReceived,
+                     [&client_handle, &user_console]
+                     (QString command, QString arguments)
+                     {
+                         using namespace talk_net;
+                         QString output = dispatch_cli_command(command,
+                                                               arguments,
+                                                               cli_handlers,
+                                                               client_handle);
+                         user_console.setCommandOutput(command, output);
                      });
 
     return app.exec();
