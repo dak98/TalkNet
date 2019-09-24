@@ -29,10 +29,10 @@ SOURCES += src/server.cpp \
            src/cli_handlers.cpp
 
 HEADERS += ../common/QConsole.hpp \
+           ../common/utility.hpp \
            include/cli_handlers.hpp
 
-INCLUDEPATH += /usr/include/socket_io \
-               include \
+INCLUDEPATH += include \
                ../common
 
 
