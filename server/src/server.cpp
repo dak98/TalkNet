@@ -13,21 +13,7 @@
 
 #include "cli_handlers.hpp"
 #include "QConsole.hpp"
-
-/*
- * Being run in a separate thread, this function waits for any messages from
- * the clients and displays them using the QTextEdit object.
- */
-[[noreturn]]
-static void collect_messages_from_clients(socket_io::server& server_handle,
-                                          QTextEdit& messages_from_clients)
-{
-    for (;;)
-    {
-        std::string const message = server_handle.receive();
-        messages_from_clients.append(message.c_str());
-    }
-}
+#include "utility.hpp"
 
 /*
  * The first argument of a cli_handler are the arguments given to the command
@@ -38,18 +24,6 @@ inline QHash<QString, cli_handler> cli_handlers
 {
     {"LIST", talk_net::cli_LIST}
 };
-
-static QString dispatch_cli_command(QString command,
-                                    QString arguments,
-                                    socket_io::server& server_handle)
-{
-    QString result;
-    if (cli_handlers.contains(command))
-        result = cli_handlers[command](arguments, server_handle);
-    else
-        result = command + ": Unknown command";
-    return result;
-}
 
 int main(int argc, char* argv[])
 {
@@ -79,14 +53,14 @@ int main(int argc, char* argv[])
      */
     main_layout.addWidget(&messages_from_clients);
     main_layout.addWidget(&user_console);
-    main_window.setLayout(&main_layout);    
+    main_window.setLayout(&main_layout);
 
     socket_io::server server_handle{argv[1], socket_io::ip_protocol::IPv4};
     main_window.show();
 
-    std::thread collector_tid = std::thread{collect_messages_from_clients,
-                                            std::ref(server_handle),
-                                            std::ref(messages_from_clients)};
+    std::thread collector_tid{talk_net::collect_messages<socket_io::server>,
+                              std::ref(server_handle),
+                              std::ref(messages_from_clients)};
     collector_tid.detach();
     /*
      * The closing of the server's collector thread should happen just before
@@ -102,8 +76,10 @@ int main(int argc, char* argv[])
                      [&server_handle, &user_console]
                      (QString command, QString arguments)
                      {
+                         using namespace talk_net;
                          QString output = dispatch_cli_command(command,
                                                                arguments,
+                                                               cli_handlers,
                                                                server_handle);
                          user_console.setCommandOutput(command, output);
                      });
