@@ -21,6 +21,11 @@ inline QHash<QString, cli_handler> cli_handlers
 {
 };
 
+/*
+ * To avoid redundancy, some of the comments which also appear in the server
+ * program were omitted from here. Check server.cpp for further explanation
+ * on the code.
+ */
 int main(int argc, char* argv[])
 {
     if (argc != 3)
@@ -41,10 +46,6 @@ int main(int argc, char* argv[])
     received_messages.setReadOnly(true);
     QConsole user_console;
 
-    /*
-     * QWidget object takes ownership of the QHBoxLayout object which takes
-     * ownership of the QTextEdit and QLineEdit objects.
-     */
     main_layout.addWidget(&received_messages);
     main_layout.addWidget(&user_console);
     main_window.setLayout(&main_layout);
@@ -56,11 +57,7 @@ int main(int argc, char* argv[])
     std::thread collector_tid{talk_net::collect_messages<socket_io::client>,
                               std::ref(client_handle),
                               std::ref(received_messages)};
-    collector_tid.detach();
-    /*
-     * The closing of the client's collector thread should happen just before
-     * the destruction of the server and QTextEdit objects.
-     */
+    collector_tid.detach();    
     QObject::connect(&app, &QApplication::aboutToQuit,
                      [&collector_tid]()
                      {
