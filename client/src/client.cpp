@@ -9,6 +9,7 @@
 
 #include <socket_io/client.hpp>
 
+#include "cli_handlers.hpp"
 #include "QConsole.hpp"
 #include "utility.hpp"
 
@@ -19,6 +20,7 @@
 using cli_handler = std::function<QString(QString, socket_io::client&)>;
 inline QHash<QString, cli_handler> cli_handlers
 {
+    {"SEND", talk_net::cli_SEND}
 };
 
 /*
@@ -45,6 +47,9 @@ int main(int argc, char* argv[])
     QTextEdit received_messages;
     received_messages.setReadOnly(true);
     QConsole user_console;
+
+    for (auto it = cli_handlers.begin(); it != cli_handlers.end(); ++it)
+        user_console.registerCommand(it.key());
 
     main_layout.addWidget(&received_messages);
     main_layout.addWidget(&user_console);

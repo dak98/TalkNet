@@ -25,12 +25,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 QMAKE_CXXFLAGS += -std=c++17
 
 SOURCES += src/client.cpp \
-           ../common/QConsole.cpp
+           ../common/QConsole.cpp \
+           src/cli_handlers.cpp
 
 HEADERS += ../common/QConsole.hpp \
-           ../common/utility.hpp
+           ../common/utility.hpp \
+           include/cli_handlers.hpp
 
-INCLUDEPATH += ../common
+INCLUDEPATH += include \
+               ../common
+
 
 LIBS += -L/usr/lib -lsockio
 
