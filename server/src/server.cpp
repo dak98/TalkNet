@@ -58,6 +58,12 @@ int main(int argc, char* argv[])
     socket_io::server server_handle{argv[1], socket_io::ip_protocol::IPv4};
     main_window.show();
 
+    /*
+     * std::thread is used here instead of QThread as functions perform
+     * operations on socket_io objects. A Qt-based wrapper would (probably)
+     * need to be written which would defeat some of the purpose of using the
+     * library in the first place.
+     */
     std::thread collector_tid{talk_net::collect_messages<socket_io::server>,
                               std::ref(server_handle),
                               std::ref(messages_from_clients)};
