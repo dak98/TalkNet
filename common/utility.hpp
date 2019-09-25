@@ -23,8 +23,8 @@ namespace talk_net
  * exceed the lifespan of its arguments.
  */
 template<class handle_type>
-[[noreturn]]
 inline auto collect_messages(handle_type& handle, QTextEdit& output) -> void
+try
 {
     for (;;)
     {
@@ -32,6 +32,8 @@ inline auto collect_messages(handle_type& handle, QTextEdit& output) -> void
         output.append(message.c_str());
     }
 }
+catch (std::system_error const&)
+{ /* Ignore this error */ }
 
 /*
  * Care must be taken to ensure that the lifespan of this function does not
