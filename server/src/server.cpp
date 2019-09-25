@@ -56,7 +56,6 @@ int main(int argc, char* argv[])
     main_window.setLayout(&main_layout);
 
     socket_io::server server_handle{argv[1], socket_io::ip_protocol::IPv4};
-    main_window.show();
 
     /*
      * std::thread is used here instead of QThread as functions perform
@@ -90,5 +89,6 @@ int main(int argc, char* argv[])
                          user_console.setCommandOutput(command, output);
                      });
 
+    main_window.show();
     return app.exec();
 }

@@ -52,7 +52,6 @@ int main(int argc, char* argv[])
 
     socket_io::ipv4_socket_address address_of_client{argv[1], argv[2]};
     socket_io::client client_handle{address_of_client};
-    main_window.show();
 
     std::thread collector_tid{talk_net::collect_messages<socket_io::client>,
                               std::ref(client_handle),
@@ -76,5 +75,6 @@ int main(int argc, char* argv[])
                          user_console.setCommandOutput(command, output);
                      });
 
+    main_window.show();
     return app.exec();
 }
