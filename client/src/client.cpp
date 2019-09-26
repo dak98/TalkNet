@@ -62,6 +62,8 @@ int main(int argc, char* argv[])
                               std::ref(client_handle),
                               std::ref(received_messages)};
     collector_tid.detach();    
+
+    qRegisterMetaType<QTextCursor>("QTextCursor");
     QObject::connect(&app, &QApplication::aboutToQuit,
                      [&collector_tid]()
                      {

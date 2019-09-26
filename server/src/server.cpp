@@ -67,10 +67,13 @@ int main(int argc, char* argv[])
                               std::ref(server_handle),
                               std::ref(messages_from_clients)};
     collector_tid.detach();
+
+    // The signals and slots mechanism requires this line.
+    qRegisterMetaType<QTextCursor>("QTextCursor");
     /*
      * The closing of the server's collector thread should happen just before
      * the destruction of the server and QTextEdit objects.
-     */
+     */    
     QObject::connect(&app, &QApplication::aboutToQuit,
                      [&collector_tid]()
                      {
