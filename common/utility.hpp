@@ -26,16 +26,27 @@ namespace talk_net
  */
 template<class handle_type>
 inline auto collect_messages(handle_type& handle, QTextEdit& output) -> void
-try
 {
-    for (;;)
-    {
+    bool is_server_working = true;
+    while (is_server_working)
+    try
+    {        
         std::string const message = handle.receive();
-        output.append(message.c_str());
+        if (message == "EXIT")
+            is_server_working = false;
+        else
+            output.append(message.c_str());
     }
+    catch (std::system_error const&)
+    {
+        is_server_working = false;
+    }
+    /*
+     * For a reason unknown to me, writing this message to QTextEdit causes a
+     * segmentation fault.
+     */
+    std::cout << "The connection to the server has been closed." << std::endl;
 }
-catch (std::system_error const&)
-{ return; }
 
 /*
  * Care must be taken to ensure that the lifespan of this function does not
