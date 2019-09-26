@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include <iostream>
+
 /*
  * This file contains functions used by both the client and the server. The
  * main goal here is to avoid code repetition and NOT to reuse them in other
@@ -33,7 +35,7 @@ try
     }
 }
 catch (std::system_error const&)
-{ /* Ignore this error */ }
+{ return; }
 
 /*
  * Care must be taken to ensure that the lifespan of this function does not
