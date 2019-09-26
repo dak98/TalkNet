@@ -61,13 +61,15 @@ int main(int argc, char* argv[])
     std::thread collector_tid{talk_net::collect_messages<socket_io::client>,
                               std::ref(client_handle),
                               std::ref(received_messages)};
-    collector_tid.detach();    
 
     qRegisterMetaType<QTextCursor>("QTextCursor");
     QObject::connect(&app, &QApplication::aboutToQuit,
                      [&collector_tid]()
                      {
-                         pthread_cancel(collector_tid.native_handle());
+                         if (collector_tid.joinable())
+                             collector_tid.join();
+                         else
+                            pthread_cancel(collector_tid.native_handle());
                      });
 
     QObject::connect(&user_console, &QConsole::commandReceived,
