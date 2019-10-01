@@ -1,5 +1,7 @@
 #include "QConsole.hpp"
 
+#include <iostream>
+
 QConsole::QConsole(QWidget *parent)
     : QWidget(parent)
 {
@@ -28,7 +30,8 @@ void QConsole::unfreeze()
 
 void QConsole::setCommandOutput(const QString& command, const QString& output)
 {
-    commands_output.append(command + ": " + output);
+    if (output != QString())
+        commands_output.append(command + ": " + output);
     unfreeze();
 }
 
@@ -38,7 +41,7 @@ void QConsole::inputReceived()
     const QString input = user_input.text();
     user_input.clear();
 
-    const int pos_of_arguments = input.indexOf(' ');    
+    const int pos_of_arguments = input.indexOf(' ');
     const QString command = input.mid(0, pos_of_arguments);
     const QString arguments = pos_of_arguments == -1
                               ? QString()
