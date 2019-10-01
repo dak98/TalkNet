@@ -8,7 +8,9 @@
 namespace talk_net
 {
 
-QString cli_LIST(QString arguments, socket_io::server& server_handle);
+auto cli_ECHO(QString arguments, socket_io::server& server_handle) -> QString;
+auto cli_LIST(QString arguments, socket_io::server& server_handle) -> QString;
+auto cli_SEND(QString arguments, socket_io::server& server_handle) -> QString;
 
 }
 
