@@ -33,10 +33,10 @@ HEADERS += ../common/QConsole.hpp \
            include/cli_handlers.hpp
 
 INCLUDEPATH += include \
-               ../common
+               ../common \
+               /usr/local/include
 
-
-LIBS += -L/usr/lib -lsockio
+LIBS += -L/usr/lib -L/usr/local/lib -lsockio
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
