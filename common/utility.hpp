@@ -18,24 +18,43 @@ namespace talk_net
 {
 
 /*
- * Being run in a separate thread, this function waits for any messages sent
- * to the handle and displays them using the QTextEdit object.
+ * The first argument of a cli_handler are the arguments given to the command
+ * or QString() (empty) if there aren't any.
+ */
+template<class handle_type>
+using cli_handler = std::function<QString(QString, handle_type&)>;
+template<class handle_type>
+extern QHash<QString, cli_handler<handle_type>> cli_handlers;
+
+/*
+ * Being run in a separate thread, this function waits for any messages
+ * received, displays them using the QTextEdit object and runs any needed
+ * handlers.
  *
  * Care must be taken to ensure that the lifespan of this function does not
  * exceed the lifespan of its arguments.
  */
 template<class handle_type>
-inline auto collect_messages(handle_type& handle, QTextEdit& output) -> void
+inline auto handle_messages(handle_type& handle, QTextEdit& output) -> void
 {
     bool is_server_working = true;
     while (is_server_working)
     try
     {        
-        std::string const message = handle.receive();
+        QString const message = handle.receive().c_str();
         if (message == "EXIT")
             is_server_working = false;
         else
-            output.append(message.c_str());
+            output.append(message);
+
+        const int pos_of_arguments = message.indexOf(' ');
+        const QString command = message.mid(0, pos_of_arguments);
+        const QString arguments = pos_of_arguments == -1
+                                  ? QString()
+                                  : message.mid(pos_of_arguments + 1, -1);
+
+        if (cli_handlers<handle_type>.contains(command))
+            cli_handlers<handle_type>[command](arguments, handle);
     }
     catch (std::system_error const&)
     {

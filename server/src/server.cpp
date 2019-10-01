@@ -15,15 +15,18 @@
 #include "QConsole.hpp"
 #include "utility.hpp"
 
-/*
- * The first argument of a cli_handler are the arguments given to the command
- * or QString() (empty) if there aren't any.
- */
-using cli_handler = std::function<QString(QString, socket_io::server&)>;
-inline QHash<QString, cli_handler> cli_handlers
+namespace talk_net
 {
-    {"LIST", talk_net::cli_LIST}
+
+template<>
+QHash<QString, cli_handler<socket_io::server>> cli_handlers<socket_io::server>
+{
+    {"ECHO", cli_ECHO},
+    {"LIST", cli_LIST},
+    {"SEND", cli_SEND}
 };
+
+} // talk_net
 
 int main(int argc, char* argv[])
 {
@@ -44,7 +47,8 @@ int main(int argc, char* argv[])
     messages_from_clients.setReadOnly(true);
     QConsole user_console;
 
-    for (auto it = cli_handlers.begin(); it != cli_handlers.end(); ++it)
+    for (auto it = talk_net::cli_handlers<socket_io::server>.begin();
+              it != talk_net::cli_handlers<socket_io::server>.end(); ++it)
         user_console.registerCommand(it.key());
 
     /*
@@ -63,7 +67,7 @@ int main(int argc, char* argv[])
      * need to be written which would defeat some of the purpose of using the
      * library in the first place.
      */
-    std::thread collector_tid{talk_net::collect_messages<socket_io::server>,
+    std::thread collector_tid{talk_net::handle_messages<socket_io::server>,
                               std::ref(server_handle),
                               std::ref(messages_from_clients)};
     collector_tid.detach();
@@ -77,7 +81,7 @@ int main(int argc, char* argv[])
     QObject::connect(&app, &QApplication::aboutToQuit,
                      [&collector_tid]()
                      {
-                         pthread_cancel(collector_tid.native_handle());
+                        pthread_cancel(collector_tid.native_handle());
                      });
 
     QObject::connect(&user_console, &QConsole::commandReceived,
@@ -85,10 +89,13 @@ int main(int argc, char* argv[])
                      (QString command, QString arguments)
                      {
                          using namespace talk_net;
-                         QString output = dispatch_cli_command(command,
-                                                               arguments,
-                                                               cli_handlers,
-                                                               server_handle);
+                         using namespace socket_io;
+
+                         QString output =
+                                 dispatch_cli_command(command,
+                                                      arguments,
+                                                      cli_handlers<server>,
+                                                      server_handle);
                          user_console.setCommandOutput(command, output);
                      });
 
