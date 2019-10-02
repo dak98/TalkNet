@@ -20,7 +20,8 @@ template<>
 QHash<QString, cli_handler<socket_io::client>> cli_handlers<socket_io::client>
 {
     {"ECHO", talk_net::cli_ECHO},
-    {"SEND", talk_net::cli_SEND}
+    {"SEND", talk_net::cli_SEND},
+    {"SENDTO", talk_net::cli_SENDTO}
 };
 
 } // talk_net

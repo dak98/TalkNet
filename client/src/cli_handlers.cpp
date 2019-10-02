@@ -33,7 +33,7 @@ auto cli_SENDTO(QString arguments, socket_io::client& client_handle)
     int const message_start_pos = arguments.indexOf(' ');
     if (message_start_pos == -1)
         return "Not enough arguments. Should be SENDTO [client's id] [message]";
-    return send("SENDTO " + arguments, client_handle);
+    return send("SEND " + arguments, client_handle);
 }
 
 }

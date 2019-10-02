@@ -11,6 +11,8 @@ namespace talk_net
 auto cli_ECHO(QString arguments, socket_io::client& client_handle) -> QString;
 auto cli_LIST(QString arguments, socket_io::client& client_handle) -> QString;
 auto cli_SEND(QString arguments, socket_io::client& client_handle) -> QString;
+auto cli_SENDTO(QString arguments, socket_io::client& client_handle)
+    -> QString;
 
 }
 
