@@ -42,16 +42,15 @@ inline auto handle_messages(handle_type& handle, QTextEdit& output) -> void
     try
     {        
         QString const message = handle.receive().c_str();
+        int const pos_of_arguments = message.indexOf(' ');
+        QString const command = message.mid(0, pos_of_arguments);
+        QString const arguments = pos_of_arguments == -1
+                                  ? QString()
+                                  : message.mid(pos_of_arguments + 1, -1);
         if (message == "EXIT")
             is_server_working = false;
         else
-            output.append(message);
-
-        const int pos_of_arguments = message.indexOf(' ');
-        const QString command = message.mid(0, pos_of_arguments);
-        const QString arguments = pos_of_arguments == -1
-                                  ? QString()
-                                  : message.mid(pos_of_arguments + 1, -1);
+            output.append(arguments);
 
         if (cli_handlers<handle_type>.contains(command))
             cli_handlers<handle_type>[command](arguments, handle);
