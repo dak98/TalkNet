@@ -11,7 +11,7 @@ auto cli_ECHO(QString arguments, socket_io::server& server_handle) -> QString
 auto cli_LIST(QString, socket_io::server& server_handle) -> QString
 {
     auto connected_clients = server_handle.get_connected_clients();
-    QString output;
+    QString output = "\n";
     for (auto const& [id, client_view] : connected_clients)
         output += QString::number(id) + ": " +
                   QString::fromStdString(client_view.to_string()) + "\n";
