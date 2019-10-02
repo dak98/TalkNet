@@ -3,13 +3,11 @@
 namespace talk_net
 {
 
-auto cli_ECHO(QString arguments, socket_io::client& client_handle) -> QString
+inline auto send(QString message, socket_io::client& client_handle) -> QString
 {
-    QString const id = QString::number(client_handle.get_id());
     try
     {
-        client_handle.send("ECHO " + id.toStdString() + " " +
-                           arguments.toStdString());
+        client_handle.send(message.toStdString());
     }
     catch (std::exception const& e)
     {
@@ -18,17 +16,24 @@ auto cli_ECHO(QString arguments, socket_io::client& client_handle) -> QString
     return QString();
 }
 
+auto cli_ECHO(QString arguments, socket_io::client& client_handle) -> QString
+{
+    QString const id = QString::number(client_handle.get_id());
+    return send("ECHO " + id + " " + arguments, client_handle);
+}
+
 auto cli_SEND(QString arguments, socket_io::client& client_handle) -> QString
 {
-    try
-    {
-        client_handle.send("SEND " + arguments.toStdString());
-    }
-    catch (std::exception const& e)
-    {
-        return "An error occured: " + QString(e.what());
-    }
-    return QString();
+    return send("SEND " + arguments, client_handle);
+}
+
+auto cli_SENDTO(QString arguments, socket_io::client& client_handle)
+    -> QString
+{
+    int const message_start_pos = arguments.indexOf(' ');
+    if (message_start_pos == -1)
+        return "Not enough arguments. Should be SENDTO [client's id] [message]";
+    return send("SENDTO " + arguments, client_handle);
 }
 
 }
