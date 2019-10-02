@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
 {
     if (argc != 2)
     {
-        std::cout << "Expected 1 argument but got " + std::to_string(argc)
+        std::cout << "Expected 1 argument but got " + std::to_string(argc - 1)
                   << ". Should be [Server's port]" << std::endl;
         return -1;
     }

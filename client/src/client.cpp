@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
 {
     if (argc != 3)
     {
-        std::cout << "Expected 2 arguments, got " + std::to_string(argc)
+        std::cout << "Expected 2 arguments, got " + std::to_string(argc - 1)
                   << ". Should be [Server's address] [Server's port]"
                   << std::endl;
         return -1;
