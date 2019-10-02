@@ -21,7 +21,6 @@ namespace talk_net
 template<>
 QHash<QString, cli_handler<socket_io::server>> cli_handlers<socket_io::server>
 {
-    {"ECHO", cli_ECHO},
     {"LIST", cli_LIST},
     {"SEND", cli_SEND}
 };

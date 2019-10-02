@@ -3,11 +3,6 @@
 namespace talk_net
 {
 
-auto cli_ECHO(QString arguments, socket_io::server& server_handle) -> QString
-{
-    return cli_SEND(arguments, server_handle);
-}
-
 auto cli_LIST(QString, socket_io::server& server_handle) -> QString
 {
     auto connected_clients = server_handle.get_connected_clients();

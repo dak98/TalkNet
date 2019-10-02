@@ -18,8 +18,8 @@ inline auto send(QString message, socket_io::client& client_handle) -> QString
 
 auto cli_ECHO(QString arguments, socket_io::client& client_handle) -> QString
 {
-    QString const id = QString::number(client_handle.get_id());
-    return send("ECHO " + id + " " + arguments, client_handle);
+    QString const self_id_str = QString::number(client_handle.get_id());
+    return cli_SENDTO(self_id_str + " " + arguments, client_handle);
 }
 
 auto cli_INFO(QString arguments, socket_io::client& client_handle) -> QString
