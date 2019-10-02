@@ -27,11 +27,6 @@ auto cli_INFO(QString arguments, socket_io::client& client_handle) -> QString
     return "ID=" + QString::number(client_handle.get_id());
 }
 
-auto cli_SEND(QString arguments, socket_io::client& client_handle) -> QString
-{
-    return send("SEND " + arguments, client_handle);
-}
-
 auto cli_SENDTO(QString arguments, socket_io::client& client_handle)
     -> QString
 {
